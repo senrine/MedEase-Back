@@ -12,7 +12,6 @@ class UserService
     private UserRepository $userRepository;
     private UserPasswordHasherInterface $hasher;
 
-
     public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $hasher)
     {
         $this->userRepository = $userRepository;
@@ -21,12 +20,13 @@ class UserService
 
     public function fetchUsers(): array
     {
-        $users = [];
+        $users = $this->userRepository->findAll();
+        $serialized_users = [];
 
-        foreach ($this->userRepository->findAll() as $user){
-            $users[] = $user->serialize();
+        foreach ($users as $user){
+            $serialized_users[] = $user->serialize();
         }
-        return $users;
+        return $serialized_users;
     }
 
     public function fetchUserById(int $id) : array
@@ -49,9 +49,9 @@ class UserService
         if ($user->isProfessional()) {
             $user->setSpeciality($data["speciality"]);
         }
+        $this->userRepository->save($user);
         return $user->serialize();
     }
-
 
     private function validateRequestData(array $data): void
     {

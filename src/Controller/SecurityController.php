@@ -17,7 +17,7 @@ class SecurityController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         $user = $userService->signup($data);
-        return $this->json([$user]);
+        return $this->json(["user"=>$user]);
     }
 
     #[Route('/login', name: 'app_user_login', methods: ["POST"])]
@@ -27,7 +27,7 @@ class SecurityController extends AbstractController
             return $this->json(["Invalid credentials"]);
         }
 
-        return $this->json([$user->serialize()]);
+        return $this->json(["user"=>$user->serialize()]);
     }
 
     #[Route('/logout', name: 'app_user_logout', methods: ["POST"])]
@@ -35,12 +35,19 @@ class SecurityController extends AbstractController
     {
     }
 
-    #[Route('/{id}', name: 'app_user_update', methods: ["PUT"])]
-    public function update(Request $request, UserService $userService, $id): JsonResponse
+    #[Route('/users', name: 'app_user_get_all', methods: ["GET"])]
+    public function getUsers(UserService $userService): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $user = $userService->updateUser($data, $id);
+        $users = $userService->fetchUsers();
 
-        return $this->json([$user]);
+        return $this->json(["users"=>$users]);
+    }
+
+    #[Route('/user/{id}', name: 'app_user_get', methods: ["GET"])]
+    public function getUserById(UserService $userService, $id): JsonResponse
+    {
+        $user = $userService->fetchUserById($id);
+
+        return $this->json(["user"=>$user]);
     }
 }
