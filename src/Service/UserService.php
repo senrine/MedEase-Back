@@ -39,7 +39,8 @@ class UserService
         $user = new User();
         $this->validateRequestData($data);
         $user->setEmail($data["email"]);
-        $user->setPassword($data["password"]);
+        $hashed_password = $this->hasher->hashPassword($user,$data["password"]);
+        $user->setPassword($hashed_password);
         $user->setName($data["name"]);
         $user->setLastname($data["lastname"]);
         $user->setLocation($data["location"]);
@@ -61,5 +62,13 @@ class UserService
                 throw new InvalidArgumentException("Invalid Request: Missing Field '$field'");
             }
         }
+    }
+
+    public function deleteUser(int $id): array
+    {
+        $user = $this->userRepository->findOneById($id);
+        $this->userRepository->remove($user);
+
+        return $user->serialize();
     }
 }

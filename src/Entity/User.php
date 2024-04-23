@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use function Symfony\Component\Translation\t;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,7 +32,7 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
     private ?string $password = null;
 
     #[ORM\Column]
-    private ?int $phoneNumber = null;
+    private ?string $phoneNumber = null;
 
     #[ORM\Column]
     private ?bool $patient = null;
@@ -108,12 +111,12 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
         return $this;
     }
 
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
 
-    public function setPhoneNumber(int $phoneNumber): static
+    public function setPhoneNumber(string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
 
@@ -183,5 +186,21 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
             "speciality"=>$this->getSpeciality(),
             "schedule"=>$this->getSchedule()
         ];
+    }
+
+    public function getRoles(): array
+    {
+        return [];
+        // TODO: Implement getRoles() method.
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
     }
 }
