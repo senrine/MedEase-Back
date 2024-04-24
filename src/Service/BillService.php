@@ -37,4 +37,27 @@ class BillService
         return $bill->serialize();
     }
 
+    public function deleteBill(int $id) : array
+    {
+        $bill = $this->billRepository->findById($id);
+        $this->billRepository->remove($bill);
+
+        return $bill->serialize();
+    }
+
+    public function getBills() : array
+    {
+        $bills = $this->billRepository->findAll();
+        $bills_serialized = [];
+        foreach ($bills as $bill){
+            $bills_serialized[] = $bill->serialize();
+        }
+        return $bills_serialized;
+    }
+
+    public function getBillById(int $id) : array
+    {
+        $bill = $this->billRepository->findById($id);
+        return $bill->serialize();
+    }
 }
