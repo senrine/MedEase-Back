@@ -43,8 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $speciality = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $schedule = null;
+    #[ORM\ManyToOne(inversedBy: 'user')]
+    private ?Schedule $schedule = null;
+
 
     public function getId(): ?int
     {
@@ -159,17 +160,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSchedule(): ?string
-    {
-        return $this->schedule;
-    }
-
-    public function setSchedule(?string $schedule): static
-    {
-        $this->schedule = $schedule;
-
-        return $this;
-    }
 
     public  function serialize() : array
     {
@@ -183,8 +173,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             "phoneNumber"=>$this->getPhoneNumber(),
             "patient"=>$this->isPatient(),
             "professional"=>$this->isProfessional(),
-            "speciality"=>$this->getSpeciality(),
-            "schedule"=>$this->getSchedule()
+            "speciality"=>$this->getSpeciality()
         ];
     }
 
@@ -202,5 +191,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
+    }
+
+    public function getSchedule(): ?Schedule
+    {
+        return $this->schedule;
+    }
+
+    public function setSchedule(?Schedule $schedule): static
+    {
+        $this->schedule = $schedule;
+
+        return $this;
     }
 }
