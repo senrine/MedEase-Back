@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -43,8 +45,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $speciality = null;
 
-    #[ORM\ManyToOne(inversedBy: 'user')]
-    private ?Schedule $schedule = null;
+
+    /**
+     * @var Collection<int, Schedule>
+     */
+    #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy: 'professional')]
+    private Collection $schedules;
+
+    public function __construct()
+    {
+        $this->schedules = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -163,6 +174,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public  function serialize() : array
     {
+        $serialized_schedules = [];
+        foreach ($this->getSchedules()->toArray() as $schedule){
+            $serialized_schedules [] = $schedule->serialize();
+            }
+
         return [
             "id"=>$this->getId(),
             "name"=>$this->getName(),
@@ -173,7 +189,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             "phoneNumber"=>$this->getPhoneNumber(),
             "patient"=>$this->isPatient(),
             "professional"=>$this->isProfessional(),
-            "speciality"=>$this->getSpeciality()
+            "speciality"=>$this->getSpeciality(),
+            "schedules"=>$serialized_schedules
         ];
     }
 
@@ -193,14 +210,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getSchedule(): ?Schedule
+
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
     {
-        return $this->schedule;
+        return $this->schedules;
     }
 
-    public function setSchedule(?Schedule $schedule): static
+    public function addSchedule(Schedule $schedule): static
     {
-        $this->schedule = $schedule;
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+            $schedule->setProfessional($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        if ($this->schedules->removeElement($schedule)) {
+            // set the owning side to null (unless already changed)
+            if ($schedule->getProfessional() === $this) {
+                $schedule->setProfessional(null);
+            }
+        }
 
         return $this;
     }

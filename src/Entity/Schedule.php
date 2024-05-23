@@ -25,16 +25,10 @@ class Schedule
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $endTime = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'schedule')]
-    private Collection $user;
+    #[ORM\ManyToOne(inversedBy: 'schedules')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $professional = null;
 
-    public function __construct()
-    {
-        $this->user = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -77,33 +71,26 @@ class Schedule
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUser(): Collection
+    public function getProfessional(): ?User
     {
-        return $this->user;
+        return $this->professional;
     }
 
-    public function addUser(User $user): static
+    public function setProfessional(?User $professional): static
     {
-        if (!$this->user->contains($user)) {
-            $this->user->add($user);
-            $user->setSchedule($this);
-        }
+        $this->professional = $professional;
 
         return $this;
     }
 
-    public function removeUser(User $user): static
+    public function serialize() : array
     {
-        if ($this->user->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getSchedule() === $this) {
-                $user->setSchedule(null);
-            }
-        }
-
-        return $this;
+        return [
+            "professional"=>$this->getProfessional(),
+            "day"=>$this->getDay(),
+            "startTime"=>$this->getStartTime(),
+            "endTime"=>$this->getEndTime()
+            ];
     }
+
 }
