@@ -44,9 +44,9 @@ class ScheduleController extends AbstractController
         return $this->json(["schedule" => $schedule]);
     }
 
-    #[Route('/schedule/{id}', name: 'app_schedule_delete', methods: ["DELETE"])]
-    public function deleteSchedule(ScheduleService $scheduleService, $id): JsonResponse
+    #[Route('/freeHours/{id}', name: 'app_schedule_free_hours', methods: ["GET"])]
+    public function getFreeHours(ScheduleService $scheduleService, $id): JsonResponse
     {
-        return $this->json(["schedule" => $scheduleService->deleteSchedule($id)]);
+        return $this->json(["schedule" => $scheduleService->getProfessionalFreeHours($id)]);
     }
 }

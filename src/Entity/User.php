@@ -46,18 +46,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $speciality = null;
 
 
-    /**
-     * @var Collection<int, Schedule>
-     */
-    #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy: 'professional')]
-    private Collection $schedules;
-
-    public function __construct()
-    {
-        $this->schedules = new ArrayCollection();
-    }
-
-
     public function getId(): ?int
     {
         return $this->id;
@@ -172,25 +160,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-    public  function serialize() : array
+    public function serialize(): array
     {
-        $serialized_schedules = [];
-        foreach ($this->getSchedules()->toArray() as $schedule){
-            $serialized_schedules [] = $schedule->serialize();
-            }
-
         return [
-            "id"=>$this->getId(),
-            "name"=>$this->getName(),
-            "lastname"=>$this->getLastname(),
-            "email"=>$this->getEmail(),
-            "password"=>$this->getPassword(),
-            "location"=>$this->getLocation(),
-            "phoneNumber"=>$this->getPhoneNumber(),
-            "patient"=>$this->isPatient(),
-            "professional"=>$this->isProfessional(),
-            "speciality"=>$this->getSpeciality(),
-            "schedules"=>$serialized_schedules
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "lastname" => $this->getLastname(),
+            "email" => $this->getEmail(),
+            "password" => $this->getPassword(),
+            "location" => $this->getLocation(),
+            "phoneNumber" => $this->getPhoneNumber(),
+            "patient" => $this->isPatient(),
+            "professional" => $this->isProfessional(),
+            "speciality" => $this->getSpeciality()
         ];
     }
 
@@ -210,35 +192,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-
-    /**
-     * @return Collection<int, Schedule>
-     */
-    public function getSchedules(): Collection
-    {
-        return $this->schedules;
-    }
-
-    public function addSchedule(Schedule $schedule): static
-    {
-        if (!$this->schedules->contains($schedule)) {
-            $this->schedules->add($schedule);
-            $schedule->setProfessional($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSchedule(Schedule $schedule): static
-    {
-        if ($this->schedules->removeElement($schedule)) {
-            // set the owning side to null (unless already changed)
-            if ($schedule->getProfessional() === $this) {
-                $schedule->setProfessional(null);
-            }
-        }
-
-        return $this;
-    }
 
 }

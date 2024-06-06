@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Appointment;
+use App\Entity\Bill;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -11,9 +13,34 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AppointmentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, Appointment::class);
+        $this->entityManager = $entityManager;
+    }
+
+
+    public function save(Appointment $appointment): void
+    {
+        $this->entityManager->persist($appointment);
+        $this->entityManager->flush();
+    }
+
+    public function remove(Appointment $appointment): void
+    {
+        $this->entityManager->remove($appointment);
+        $this->entityManager->flush();
+    }
+
+    public function findById(int $id): Appointment
+    {
+        return $this->createQueryBuilder("a")
+            ->where("a.id = :id")
+            ->setParameter("id", $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     //    /**
