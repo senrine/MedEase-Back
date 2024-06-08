@@ -45,6 +45,17 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findBySpecialty(string $specialty): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->where('u.professional = :isProfessional')
+            ->andWhere('u.speciality = :specialty')
+            ->setParameter('isProfessional', true)
+            ->setParameter('specialty', $specialty);
+
+        return $qb->getQuery()->getResult();
+    }
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

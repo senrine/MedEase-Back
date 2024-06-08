@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class UserController extends AbstractController
 {
-    #[Route('/user', name: 'app_user')]
-    public function index(): Response
+    #[Route('/specialty', name: 'app_user_specialty', methods: ["POST"])]
+    public function getUserBySpeciality(Request $request, UserService $userService): JsonResponse
     {
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
-        ]);
+        $data = json_decode($request->getContent(), true);
+        $user = $userService->getUsersBySpecialty($data);
+        return $this->json(["user" => $user]);
     }
 }
