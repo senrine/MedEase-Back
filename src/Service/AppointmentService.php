@@ -114,4 +114,19 @@ class AppointmentService
         return $appointment->serialize();
     }
 
+    public function getUserAppointments(int $id): array
+    {
+        $user = $this->userRepository->findOneById($id);
+        if (null === $user) {
+            throw new InvalidArgumentException("No such user");
+        }
+        if ($user->isProfessional()) {
+            return $this->appointmentRepository->findBy(["professional" => $user]);
+        }
+        if ($user->isPatient()) {
+            return $this->appointmentRepository->findBy(["patient" => $user]);
+        }
+
+        return [];
+    }
 }
