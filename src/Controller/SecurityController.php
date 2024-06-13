@@ -51,12 +51,12 @@ class SecurityController extends AbstractController
         return $this->json(["user"=>$user]);
     }
 
-    #[Route('/user/{id}', name: 'app_user_get', methods: ["DELETE"])]
+   /* #[Route('/user/{id}', name: 'app_user_get', methods: ["DELETE"])]
     public function deleteUser(UserService $userService, $id): JsonResponse
     {
         $user = $userService->deleteUser($id);
 
         return $this->json(["user"=>$user]);
-    }
+    }*/
 
 }

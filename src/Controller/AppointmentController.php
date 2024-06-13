@@ -41,12 +41,24 @@ class AppointmentController extends AbstractController
         return $this->json(["appointment" => $appointments]);
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route('/appointment/{id}', name: 'app_appointment_update', methods: ["POST"])]
     public function update(Request $request, AppointmentService $appointmentService, $id): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
         $appointments = $appointmentService->updateAppointment($data, $id);
+
+        return $this->json(["appointment" => $appointments]);
+    }
+
+    #[Route('/appointmentUser/{id}', name: 'app_appointment_get_user', methods: ["GET"])]
+    public function getUserAppointments(AppointmentService $appointmentService, $id): JsonResponse
+    {
+
+        $appointments = $appointmentService->getUserAppointments($id);
 
         return $this->json(["appointment" => $appointments]);
     }

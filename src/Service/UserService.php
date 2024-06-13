@@ -23,13 +23,13 @@ class UserService
         $users = $this->userRepository->findAll();
         $serialized_users = [];
 
-        foreach ($users as $user){
+        foreach ($users as $user) {
             $serialized_users[] = $user->serialize();
         }
         return $serialized_users;
     }
 
-    public function fetchUserById(int $id) : array
+    public function fetchUserById(int $id): array
     {
         return $this->userRepository->findOneById($id)->serialize();
     }
@@ -39,7 +39,7 @@ class UserService
         $user = new User();
         $this->validateRequestData($data);
         $user->setEmail($data["email"]);
-        $hashed_password = $this->hasher->hashPassword($user,$data["password"]);
+        $hashed_password = $this->hasher->hashPassword($user, $data["password"]);
         $user->setPassword($hashed_password);
         $user->setName($data["name"]);
         $user->setLastname($data["lastname"]);
@@ -70,5 +70,10 @@ class UserService
         $this->userRepository->remove($user);
 
         return $user->serialize();
+    }
+
+    public function getUsersBySpecialty(array $data): array
+    {
+        return $this->userRepository->findBySpecialty($data["specialty"]);
     }
 }
